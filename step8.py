@@ -108,13 +108,13 @@ def move_car(direction):
 
     if direction == "up":
         print("Moving forward")
-        px.forward()
+        px.forward(1)
         time.sleep(TIME_PER_CELL)
         px.stop()
         
     elif direction == "down":
         print("Moving backward")
-        px.backward()
+        px.backward(1)
         time.sleep(TIME_PER_CELL)
         px.stop()
         
@@ -124,23 +124,23 @@ def move_car(direction):
         px.set_dir_angle(STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
-        px.forward()
+        px.forward(1)
         time.sleep(TIME_PER_CELL)
         
         px.stop()
-        px.set_dir_angle(0)         # Reset steering to straight (typically 0 degrees)
+        px.set_dir_servo_angle(0)         # Reset steering to straight (typically 0 degrees)
         
     elif direction == "right":
         print("Turning right")
 
-        px.set_dir_angle(-STEERING_ANGLE)
+        px.set_dir_servo_angle(-STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
-        px.forward()
+        px.forward(1)
         time.sleep(TIME_PER_CELL)
 
         px.stop()
-        px.set_dir_angle(0)
+        px.set_dir_servo_angle(0)
         
     else:
         print("Unknown command received!")
