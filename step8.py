@@ -208,8 +208,8 @@ if __name__ == '__main__':
     current_orientation = "up"
 
     # Define start and goal positions in grid coordinates
-    start = (0, 0)
-    goal = (9, 9)
+    start = (0, 4)
+    goal = (9, 4)
     current_cell = start
 
     # Run A* search to compute a path
