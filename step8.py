@@ -131,7 +131,7 @@ def path_to_commands(path):
     return commands
 
 def detect_stop_sign():
-    detected_sign = Vilib.detect_obj_parameter.get('traffic_sign_t', None)      #check syntax
+    ##detected_sign = Vilib.detect_obj_parameter.get('traffic_sign_t', None)      #check syntax
     return detected_sign == 'stop'
 
 def detect_obstacle_in_direction(direction, current):
@@ -228,7 +228,7 @@ def move_car(direction):
 if __name__ == '__main__':
     px = Picarx()
     Vilib.camera_start()
-    Vilib.traffic_sign_detect_switch(True)
+    Vilib.traffic_detect_switch(True)
 
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
