@@ -95,14 +95,44 @@ def path_to_commands(path):
 
 
 import time
-from picarx import Picarx 
-
-px = Picarx()
+from picarx import Picarx
+import Vilib
 
 # Constants to calibrate movement (tweak these based on your testing)
 TIME_PER_CELL = 0.5     # Time (in seconds) to move forward the distance of one grid cell
 TURN_DURATION = 0.3     # Time (in seconds) to perform a turn maneuver
 STEERING_ANGLE = 30     # Example steering angle in degrees (adjust as needed)
+
+def path_to_commands(path):
+    """
+    Converts a list of grid coordinates into movement commands.
+    Here, we assume:
+      - Moving from one cell upward (row decreases) means a forward move.
+      - Similarly, a move downward corresponds to a backward move.
+      - Moves to the left or right imply a turn and then a forward move.
+    Adjust these assumptions based on your grid's orientation relative to your car.
+    """
+    commands = []
+    for i in range(1, len(path)):
+        curr = path[i - 1]
+        nxt = path[i]
+        dx = nxt[0] - curr[0]
+        dy = nxt[1] - curr[1]
+        if dx == -1 and dy == 0:
+            commands.append("up")
+        elif dx == 1 and dy == 0:
+            commands.append("down")
+        elif dx == 0 and dy == -1:
+            commands.append("left")
+        elif dx == 0 and dy == 1:
+            commands.append("right")
+        else:
+            commands.append("unknown")
+    return commands
+
+def detect_stop_sign():
+    detected_sign = Vilib.detect_obj_parameter.get('traffic_sign_t', None)
+    return detected_sign == 'stop'
 
 def move_car(direction):
 
@@ -121,7 +151,8 @@ def move_car(direction):
     elif direction == "left":
         print("Turning left")
 
-        px.set_dir_angle(STEERING_ANGLE)
+        px.set_dir_servo_angle(STEERING_ANGLE)
+        px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
         px.forward(1)
@@ -129,11 +160,13 @@ def move_car(direction):
         
         px.stop()
         px.set_dir_servo_angle(0)         # Reset steering to straight (typically 0 degrees)
+        px.set_cam_pan_angle(0)
         
     elif direction == "right":
         print("Turning right")
 
         px.set_dir_servo_angle(-STEERING_ANGLE)
+        px.set_cam_pan_angle(-STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
         px.forward(1)
@@ -141,15 +174,25 @@ def move_car(direction):
 
         px.stop()
         px.set_dir_servo_angle(0)
+        px.set_cam_pan_angle(0)
         
     else:
         print("Unknown command received!")
+
+    if px.detect_stop_sign():
+        print("Stop sign detected! Stopping the car.")
+        px.stop()
+        time.sleep(3)
 
 
 
 
 
 if __name__ == '__main__':
+    px = Picarx()
+    Vilib.camera_start()
+    Vilib.traffic_sign_detect_switch(True)
+
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
     # Example obstacles:
@@ -178,3 +221,9 @@ if __name__ == '__main__':
 
 
 
+"""Notes: 
+
+- TIME PER CELL is how car measures where it is at
+- we must build the obstacle in the main (see example)
+
+"""
