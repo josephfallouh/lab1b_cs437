@@ -92,9 +92,9 @@ def path_to_commands(path):
         dx = nxt[0] - curr[0]
         dy = nxt[1] - curr[1]
         if dx == -1 and dy == 0:
-            commands.append("down")
-        elif dx == 1 and dy == 0:
             commands.append("up")
+        elif dx == 1 and dy == 0:
+            commands.append("down")
         elif dx == 0 and dy == -1:
             commands.append("left")
         elif dx == 0 and dy == 1:
