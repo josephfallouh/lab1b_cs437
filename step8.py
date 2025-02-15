@@ -96,7 +96,7 @@ def path_to_commands(path):
 
 import time
 from picarx import Picarx
-from Vilib import Vilib
+from vilib import Vilib
 
 # Constants to calibrate movement (tweak these based on your testing)
 TIME_PER_CELL = 0.5     # Time (in seconds) to move forward the distance of one grid cell
