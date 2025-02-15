@@ -86,6 +86,8 @@ def path_to_commands(path):
     """
     DIRECTIONS = ["up", "right", "down", "left"]  
     direction = "up"  # Track current facing direction
+    commands = []
+    grid_directions = []
 
     for i in range(1, len(path)):
         curr = path[i - 1]
@@ -107,7 +109,8 @@ def path_to_commands(path):
         else:
             commands.append("unknown")
             continue
-
+        grid_directions.append(new_direction)
+        
         # Turn the robot if necessary
         while direction != new_direction:
             # Determine whether to turn left or right
@@ -122,7 +125,7 @@ def path_to_commands(path):
         # Move forward after turning
         commands.append("up")
 
-    return commands
+    return commands, grid_directions
 def detect_stop_sign():
     detected_sign = Vilib.traffic_sign_obj_parameter['t']  
     return detected_sign == 'stop'
@@ -226,7 +229,6 @@ if __name__ == '__main__':
 
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
-    current_orientation = "up"
 
     # Define start and goal positions in grid coordinates
     start = (0, 0)
@@ -242,20 +244,20 @@ if __name__ == '__main__':
             break
         
         print("Path found:", path)
-        commands = path_to_commands(path)
+        commands, grid_directions = path_to_commands(path)
         print("Movement commands:", commands)
         
         # Execute the planned commands step-by-step
-        for command in commands:
+        for command, grid_direction in zip(commands, grid_directions):
 
             # Determine the next cell based on the current cell and the command
-            if command == "up":
+            if grid_direction == "up":
                 next_cell = (current_cell[0] + 1, current_cell[1])
-            elif command == "down":
+            elif grid_direction == "down":
                 next_cell = (current_cell[0] - 1, current_cell[1])
-            elif command == "left":
+            elif grid_direction == "left":
                 next_cell = (current_cell[0], current_cell[1] - 1)
-            elif command == "right":
+            elif grid_direction == "right":
                 next_cell = (current_cell[0], current_cell[1] + 1)
             else:
                 print("Encountered unknown command. Skipping.")
