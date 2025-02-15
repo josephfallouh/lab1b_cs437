@@ -120,7 +120,7 @@ def path_to_commands(path):
             direction = DIRECTIONS[(DIRECTIONS.index(direction) + 1) % 4]  # Simulate turn
 
         # Move forward after turning
-        commands.append("forward")
+        commands.append("up")
 
     return commands
 def detect_stop_sign():
