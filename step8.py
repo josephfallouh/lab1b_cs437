@@ -89,16 +89,16 @@ def path_to_commands(path):
     for i in range(1, len(path)):
         curr = path[i - 1]
         nxt = path[i]
-        dx = nxt[0] + curr[0]
-        dy = nxt[1] + curr[1]
-        if dx == -1 and dy == 0:
-            commands.append("down")
-        elif dx == 1 and dy == 0:
+        dx = nxt[0] - curr[0]
+        dy = nxt[1] - curr[1]
+        if dx == 1 and dy == 0:
             commands.append("up")
+        elif dx == -1 and dy == 0:
+            commands.append("down")
         elif dx == 0 and dy == -1:
-            commands.append("right")
-        elif dx == 0 and dy == 1:
             commands.append("left")
+        elif dx == 0 and dy == 1:
+            commands.append("right")
         else:
             commands.append("unknown")
     return commands
