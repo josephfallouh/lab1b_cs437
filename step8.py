@@ -209,7 +209,7 @@ if __name__ == '__main__':
 
     # Define start and goal positions in grid coordinates
     start = (0, 0)
-    goal = (9, 9)
+    goal = (-9, -9)
     current_cell = start
 
     # Run A* search to compute a path
