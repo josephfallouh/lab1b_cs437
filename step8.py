@@ -89,8 +89,8 @@ def path_to_commands(path):
     for i in range(1, len(path)):
         curr = path[i - 1]
         nxt = path[i]
-        dx = nxt[0] - curr[0]
-        dy = nxt[1] - curr[1]
+        dx = nxt[0] + curr[0]
+        dy = nxt[1] + curr[1]
         if dx == -1 and dy == 0:
             commands.append("down")
         elif dx == 1 and dy == 0:
@@ -209,7 +209,7 @@ if __name__ == '__main__':
 
     # Define start and goal positions in grid coordinates
     start = (0, 0)
-    goal = (-9, -9)
+    goal = (9, 9)
     current_cell = start
 
     # Run A* search to compute a path
