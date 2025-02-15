@@ -231,6 +231,7 @@ if __name__ == '__main__':
     px = Picarx()
     Vilib.camera_start()
     Vilib.traffic_detect_switch(True)
+    Vilib.display(local=True, web=True)
 
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
