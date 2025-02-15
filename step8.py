@@ -227,9 +227,9 @@ if __name__ == '__main__':
         # Execute the planned commands step-by-step
         for command in commands:
 
-            if current_orientation == command:
-                next_cell = (current_cell[0] + 1, current_cell[1])
-                continue
+            #if current_orientation == command:
+                #next_cell = (current_cell[0] + 1, current_cell[1])
+                #continue
 
             # Determine the next cell based on the current cell and the command
             if command == "up":
@@ -244,7 +244,7 @@ if __name__ == '__main__':
                 print("Encountered unknown command. Skipping.")
                 continue
 
-            current_orientation = command
+            #current_orientation = command
             
             # Before executing, check for an obstacle in the intended cell.
             if detect_obstacle_in_direction(command, current_cell):
