@@ -228,7 +228,7 @@ if __name__ == '__main__':
         for command in commands:
 
             if current_orientation == command:
-                next_cell = (current_cell[0] - 1, current_cell[1])
+                next_cell = (current_cell[0] + 1, current_cell[1])
                 continue
 
             # Determine the next cell based on the current cell and the command
