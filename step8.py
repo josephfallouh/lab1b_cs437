@@ -131,6 +131,7 @@ def path_to_commands(path):
     return commands
 
 def detect_stop_sign():
+    print("Detecting stop sign...")
     detected_sign = Vilib.traffic_sign_obj_parameter['t']  
     return detected_sign == 'stop'
 
@@ -264,7 +265,12 @@ if __name__ == '__main__':
             else:
                 print("Encountered unknown command. Skipping.")
                 continue
-            
+
+            # Check for stop sign before moving:
+            if detect_stop_sign():
+                print("Stop sign detected! Stopping the car.")
+                px.stop()
+                time.sleep(3)    
             # Before executing, check for an obstacle in the intended cell.
             if detect_obstacle_in_direction(command, current_cell):
                 print(f"Obstacle detected at {next_cell}. Updating grid and replanning.")
