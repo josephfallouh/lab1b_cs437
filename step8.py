@@ -131,7 +131,7 @@ def path_to_commands(path):
     return commands
 
 def detect_stop_sign():
-    ##detected_sign = Vilib.detect_obj_parameter.get('traffic_sign_t', None)      #check syntax
+    detected_sign = Vilib.traffic_sign_obj_parameter['t']  
     return detected_sign == 'stop'
 
 def detect_obstacle_in_direction(direction, current):
@@ -216,7 +216,7 @@ def move_car(direction):
     else:
         print("Unknown command received!")
 
-    if px.detect_stop_sign():
+    if detect_stop_sign():
         print("Stop sign detected! Stopping the car.")
         px.stop()
         time.sleep(3)
