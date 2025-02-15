@@ -148,13 +148,13 @@ def move_car(direction):
 
     if direction == "up":
         print("Moving forward")
-        px.forward(1)
+        px.forward(30)
         time.sleep(TIME_PER_CELL)
         px.stop()
         
     elif direction == "down":
         print("Moving backward")
-        px.backward(1)
+        px.backward(30)
         time.sleep(TIME_PER_CELL)
         px.stop()
         
@@ -165,7 +165,7 @@ def move_car(direction):
         px.set_cam_pan_angle(-STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
-        px.forward(1)
+        px.forward(30)
         time.sleep(TIME_PER_CELL)
         
         px.stop()
@@ -179,7 +179,7 @@ def move_car(direction):
         px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
-        px.forward(1)
+        px.forward(30)
         time.sleep(TIME_PER_CELL)
 
         px.stop()
