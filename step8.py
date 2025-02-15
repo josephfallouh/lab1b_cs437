@@ -63,33 +63,6 @@ def reconstruct_path(came_from, current):
     total_path.reverse()
     return total_path
 
-def path_to_commands(path):
-    """
-    Converts a list of grid coordinates into movement commands.
-    Here, we assume:
-      - Moving from one cell upward (row decreases) means a forward move.
-      - Similarly, a move downward corresponds to a backward move.
-      - Moves to the left or right imply a turn and then a forward move.
-    Adjust these assumptions based on your grid's orientation relative to your car.
-    """
-    commands = []
-    for i in range(1, len(path)):
-        curr = path[i - 1]
-        nxt = path[i]
-        dx = nxt[0] - curr[0]
-        dy = nxt[1] - curr[1]
-        if dx == -1 and dy == 0:
-            commands.append("up")
-        elif dx == 1 and dy == 0:
-            commands.append("down")
-        elif dx == 0 and dy == -1:
-            commands.append("left")
-        elif dx == 0 and dy == 1:
-            commands.append("right")
-        else:
-            commands.append("unknown")
-    return commands
-
 
 
 
@@ -229,9 +202,10 @@ if __name__ == '__main__':
     px = Picarx()
     Vilib.camera_start()
     Vilib.traffic_detect_switch(True)
-
+    
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
+    current_orientation = "up"
 
     # Define start and goal positions in grid coordinates
     start = (0, 0)
@@ -252,6 +226,11 @@ if __name__ == '__main__':
         
         # Execute the planned commands step-by-step
         for command in commands:
+
+            if current_orientation == command:
+                next_cell = (current_cell[0] - 1, current_cell[1])
+                continue
+
             # Determine the next cell based on the current cell and the command
             if command == "up":
                 next_cell = (current_cell[0] - 1, current_cell[1])
@@ -264,6 +243,8 @@ if __name__ == '__main__':
             else:
                 print("Encountered unknown command. Skipping.")
                 continue
+
+            current_orientation = command
             
             # Before executing, check for an obstacle in the intended cell.
             if detect_obstacle_in_direction(command, current_cell):
@@ -282,6 +263,7 @@ if __name__ == '__main__':
         
         # Optional: Pause briefly before re-planning if needed.
         time.sleep(0.5)
+
 
 
 
