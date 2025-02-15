@@ -63,33 +63,6 @@ def reconstruct_path(came_from, current):
     total_path.reverse()
     return total_path
 
-def path_to_commands(path):
-    """
-    Converts a list of grid coordinates into movement commands.
-    Here, we assume:
-      - Moving from one cell upward (row decreases) means a forward move.
-      - Similarly, a move downward corresponds to a backward move.
-      - Moves to the left or right imply a turn and then a forward move.
-    Adjust these assumptions based on your grid's orientation relative to your car.
-    """
-    commands = []
-    for i in range(1, len(path)):
-        curr = path[i - 1]
-        nxt = path[i]
-        dx = nxt[0] - curr[0]
-        dy = nxt[1] - curr[1]
-        if dx == -1 and dy == 0:
-            commands.append("up")
-        elif dx == 1 and dy == 0:
-            commands.append("down")
-        elif dx == 0 and dy == -1:
-            commands.append("left")
-        elif dx == 0 and dy == 1:
-            commands.append("right")
-        else:
-            commands.append("unknown")
-    return commands
-
 
 
 
@@ -118,10 +91,10 @@ def path_to_commands(path):
         nxt = path[i]
         dx = nxt[0] - curr[0]
         dy = nxt[1] - curr[1]
-        if dx == -1 and dy == 0:
-            commands.append("down")
-        elif dx == 1 and dy == 0:
+        if dx == 1 and dy == 0:
             commands.append("up")
+        elif dx == -1 and dy == 0:
+            commands.append("down")
         elif dx == 0 and dy == -1:
             commands.append("left")
         elif dx == 0 and dy == 1:
@@ -154,13 +127,13 @@ def detect_obstacle_in_direction(direction, current):
         distance = px.ultrasonic.read()
     # For left, pan the sensor to the left.
     elif direction == "left":
-        px.set_cam_pan_angle(STEERING_ANGLE)
+        px.set_cam_pan_angle(-STEERING_ANGLE)
         time.sleep(0.1)
         distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
     # For right, pan the sensor to the right.
     elif direction == "right":
-        px.set_cam_pan_angle(-STEERING_ANGLE)
+        px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(0.1)
         distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
@@ -190,8 +163,8 @@ def move_car(direction):
     elif direction == "left":
         print("Turning left")
 
-        px.set_dir_servo_angle(STEERING_ANGLE)
-        px.set_cam_pan_angle(STEERING_ANGLE)
+        px.set_dir_servo_angle(-STEERING_ANGLE)
+        px.set_cam_pan_angle(-STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
         px.forward(1)
@@ -204,8 +177,8 @@ def move_car(direction):
     elif direction == "right":
         print("Turning right")
 
-        px.set_dir_servo_angle(-STEERING_ANGLE)
-        px.set_cam_pan_angle(-STEERING_ANGLE)
+        px.set_dir_servo_angle(STEERING_ANGLE)
+        px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
         px.forward(1)
@@ -235,6 +208,7 @@ if __name__ == '__main__':
 
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
+    current_orientation = "up"
 
     # Define start and goal positions in grid coordinates
     start = (0, 0)
@@ -255,11 +229,16 @@ if __name__ == '__main__':
         
         # Execute the planned commands step-by-step
         for command in commands:
+
+            if current_orientation == command:
+                next_cell = (current_cell[0] - 1, current_cell[1])
+                continue
+
             # Determine the next cell based on the current cell and the command
             if command == "up":
-                next_cell = (current_cell[0] - 1, current_cell[1])
-            elif command == "down":
                 next_cell = (current_cell[0] + 1, current_cell[1])
+            elif command == "down":
+                next_cell = (current_cell[0] - 1, current_cell[1])
             elif command == "left":
                 next_cell = (current_cell[0], current_cell[1] - 1)
             elif command == "right":
@@ -273,6 +252,8 @@ if __name__ == '__main__':
                 print("Stop sign detected! Stopping the car.")
                 px.stop()
                 time.sleep(3)    
+            current_orientation = command
+            
             # Before executing, check for an obstacle in the intended cell.
             if detect_obstacle_in_direction(command, current_cell):
                 print(f"Obstacle detected at {next_cell}. Updating grid and replanning.")
@@ -290,6 +271,7 @@ if __name__ == '__main__':
         
         # Optional: Pause briefly before re-planning if needed.
         time.sleep(0.5)
+
 
 
 
