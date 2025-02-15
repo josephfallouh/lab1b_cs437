@@ -202,7 +202,8 @@ if __name__ == '__main__':
     px = Picarx()
     Vilib.camera_start()
     Vilib.traffic_detect_switch(True)
-    
+    Vilib.display(local=True, web=True)
+
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
     current_orientation = "up"
@@ -244,6 +245,11 @@ if __name__ == '__main__':
                 print("Encountered unknown command. Skipping.")
                 continue
 
+            # Check for stop sign before moving:
+            if detect_stop_sign():
+                print("Stop sign detected! Stopping the car.")
+                px.stop()
+                time.sleep(3)    
             #current_orientation = command
             
             # Before executing, check for an obstacle in the intended cell.
