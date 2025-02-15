@@ -125,13 +125,13 @@ def detect_obstacle_in_direction(direction, current):
         distance = px.ultrasonic.read()
     # For left, pan the sensor to the left.
     elif direction == "left":
-        px.set_cam_pan_angle(STEERING_ANGLE)
+        px.set_cam_pan_angle(-STEERING_ANGLE)
         time.sleep(0.1)
         distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
     # For right, pan the sensor to the right.
     elif direction == "right":
-        px.set_cam_pan_angle(-STEERING_ANGLE)
+        px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(0.1)
         distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
@@ -175,7 +175,7 @@ def move_car(direction):
     elif direction == "right":
         print("Turning right")
 
-        px.set_dir_servo_angle(TEERING_ANGLE)
+        px.set_dir_servo_angle(STEERING_ANGLE)
         px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
