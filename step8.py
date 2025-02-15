@@ -131,8 +131,45 @@ def path_to_commands(path):
     return commands
 
 def detect_stop_sign():
-    detected_sign = Vilib.detect_obj_parameter.get('traffic_sign_t', None)
+    detected_sign = Vilib.detect_obj_parameter.get('traffic_sign_t', None)      #check syntax
     return detected_sign == 'stop'
+
+def detect_obstacle_in_direction(direction, current):
+    """
+    Placeholder for obstacle detection logic.
+    Replace this function with your actual sensor code.
+    The function should return True if an obstacle is detected in the intended cell.
+    
+    For example, if using an ultrasonic sensor, check if the distance in the 
+    direction of movement is below a threshold.
+    """
+    THRESHOLD_DISTANCE = 30  # cm; adjust based on your sensor and environment
+    
+    # For forward movement, keep the sensor (camera) centered.
+    if direction == "up":
+        px.set_cam_pan_angle(0)
+        time.sleep(0.1)
+        distance = px.get_distance()
+    # For left, pan the sensor to the left.
+    elif direction == "left":
+        px.set_cam_pan_angle(STEERING_ANGLE)
+        time.sleep(0.1)
+        distance = px.get_distance()
+        px.set_cam_pan_angle(0)
+    # For right, pan the sensor to the right.
+    elif direction == "right":
+        px.set_cam_pan_angle(-STEERING_ANGLE)
+        time.sleep(0.1)
+        distance = px.get_distance()
+        px.set_cam_pan_angle(0)
+    # For backward movement, if no rear sensor is available, assume no obstacle.
+    elif direction == "down":
+        distance = float('inf')
+    else:
+        distance = float('inf')
+    
+    print(f"Obstacle detection for direction '{direction}': measured distance = {distance} cm")
+    return distance < THRESHOLD_DISTANCE
 
 def move_car(direction):
 
@@ -195,35 +232,61 @@ if __name__ == '__main__':
 
     # Create a sample 10x10 grid (0 = free, 1 = obstacle)
     grid = np.zeros((10, 10), dtype=int)
-    # Example obstacles:
-    grid[3, 1:8] = 1    # Horizontal wall at row 3
-    grid[6, 2:10] = 1   # Horizontal wall at row 6
 
     # Define start and goal positions in grid coordinates
     start = (0, 0)
     goal = (9, 9)
-    
+    current_cell = start
+
     # Run A* search to compute a path
-    path = astar(grid, start, goal)
-    
-    if not path:
-        print("No path found!")
-    else:
+    while current_cell != goal:
+        print(f"\nCurrent position: {current_cell}")
+        path = astar(grid, current_cell, goal)
+        if not path:
+            print("No path found! Goal is unreachable.")
+            break
+        
         print("Path found:", path)
         commands = path_to_commands(path)
         print("Movement commands:", commands)
         
-        # Execute each command on the PiCar-X
-        for cmd in commands:
-            move_car(cmd)
-            # Optional: Add a short pause between commands
-            time.sleep(0.5)
+        # Execute the planned commands step-by-step
+        for command in commands:
+            # Determine the next cell based on the current cell and the command
+            if command == "up":
+                next_cell = (current_cell[0] - 1, current_cell[1])
+            elif command == "down":
+                next_cell = (current_cell[0] + 1, current_cell[1])
+            elif command == "left":
+                next_cell = (current_cell[0], current_cell[1] - 1)
+            elif command == "right":
+                next_cell = (current_cell[0], current_cell[1] + 1)
+            else:
+                print("Encountered unknown command. Skipping.")
+                continue
+            
+            # Before executing, check for an obstacle in the intended cell.
+            if detect_obstacle_in_direction(command, current_cell):
+                print(f"Obstacle detected at {next_cell}. Updating grid and replanning.")
+                grid[next_cell] = 1  # Mark the cell as an obstacle.
+                break  # Break out to replan the route from the current position.
+            
+            # No obstacle detected; execute the movement command.
+            move_car(command)
+            current_cell = next_cell  # Update the current position.
+            
+            # Check if the goal has been reached.
+            if current_cell == goal:
+                print("Goal reached!")
+                break
+        
+        # Optional: Pause briefly before re-planning if needed.
+        time.sleep(0.5)
 
 
 
 """Notes: 
 
-- TIME PER CELL is how car measures where it is at
-- we must build the obstacle in the main (see example)
+- TIME PER CELL is how car measures where it is at (if TIME PER CELL is 0.5s, it will take the car 4.5s to go accross the grids x or y axis)
 
 """
