@@ -149,18 +149,18 @@ def detect_obstacle_in_direction(direction, current):
     if direction == "up":
         px.set_cam_pan_angle(0)
         time.sleep(0.1)
-        distance = px.get_distance()
+        distance = px.ultrasonic.read()
     # For left, pan the sensor to the left.
     elif direction == "left":
         px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(0.1)
-        distance = px.get_distance()
+        distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
     # For right, pan the sensor to the right.
     elif direction == "right":
         px.set_cam_pan_angle(-STEERING_ANGLE)
         time.sleep(0.1)
-        distance = px.get_distance()
+        distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
     # For backward movement, if no rear sensor is available, assume no obstacle.
     elif direction == "down":
