@@ -83,26 +83,46 @@ def path_to_commands(path):
       - Moving from one cell upward (row decreases) means a forward move.
       - Similarly, a move downward corresponds to a backward move.
       - Moves to the left or right imply a turn and then a forward move.
-    Adjust these assumptions based on your grid's orientation relative to your car.
     """
-    commands = []
+    DIRECTIONS = ["up", "right", "down", "left"]  
+    direction = "up"  # Track current facing direction
+
     for i in range(1, len(path)):
         curr = path[i - 1]
         nxt = path[i]
-        dx = nxt[0] - curr[0]
-        dy = nxt[1] - curr[1]
+
+        # Correct dx and dy based on row-major grid
+        dx = curr[0] - nxt[0]  # Negative = moving down, Positive = moving up
+        dy = nxt[1] - curr[1]  # Negative = moving left, Positive = moving right
+
+        # Determine the required new direction
         if dx == 1 and dy == 0:
-            commands.append("up")
+            new_direction = "up"
         elif dx == -1 and dy == 0:
-            commands.append("down")
+            new_direction = "down"
         elif dx == 0 and dy == -1:
-            commands.append("left")
+            new_direction = "left"
         elif dx == 0 and dy == 1:
-            commands.append("right")
+            new_direction = "right"
         else:
             commands.append("unknown")
-    return commands
+            continue
 
+        # Turn the robot if necessary
+        while direction != new_direction:
+            # Determine whether to turn left or right
+            current_idx = DIRECTIONS.index(direction)
+            target_idx = DIRECTIONS.index(new_direction)
+            if (target_idx - current_idx) % 4 == 1:
+                commands.append("right")
+            else:
+                commands.append("left")
+            direction = DIRECTIONS[(DIRECTIONS.index(direction) + 1) % 4]  # Simulate turn
+
+        # Move forward after turning
+        commands.append("forward")
+
+    return commands
 def detect_stop_sign():
     detected_sign = Vilib.traffic_sign_obj_parameter['t']  
     return detected_sign == 'stop'
@@ -228,10 +248,6 @@ if __name__ == '__main__':
         # Execute the planned commands step-by-step
         for command in commands:
 
-            if current_orientation == command:
-                next_cell = (current_cell[0] + 1, current_cell[1])
-                continue
-
             # Determine the next cell based on the current cell and the command
             if command == "up":
                 next_cell = (current_cell[0] + 1, current_cell[1])
@@ -250,7 +266,6 @@ if __name__ == '__main__':
                 print("Stop sign detected! Stopping the car.")
                 px.stop()
                 time.sleep(3)    
-            #current_orientation = command
             
             # Before executing, check for an obstacle in the intended cell.
             if detect_obstacle_in_direction(command, current_cell):
