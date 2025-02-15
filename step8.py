@@ -161,8 +161,8 @@ def move_car(direction):
     elif direction == "left":
         print("Turning left")
 
-        px.set_dir_servo_angle(STEERING_ANGLE)
-        px.set_cam_pan_angle(STEERING_ANGLE)
+        px.set_dir_servo_angle(-STEERING_ANGLE)
+        px.set_cam_pan_angle(-STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
         px.forward(1)
@@ -175,8 +175,8 @@ def move_car(direction):
     elif direction == "right":
         print("Turning right")
 
-        px.set_dir_servo_angle(-STEERING_ANGLE)
-        px.set_cam_pan_angle(-STEERING_ANGLE)
+        px.set_dir_servo_angle(TEERING_ANGLE)
+        px.set_cam_pan_angle(STEERING_ANGLE)
         time.sleep(TURN_DURATION)
 
         px.forward(1)
