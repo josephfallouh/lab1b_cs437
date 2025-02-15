@@ -233,9 +233,9 @@ if __name__ == '__main__':
 
             # Determine the next cell based on the current cell and the command
             if command == "up":
-                next_cell = (current_cell[0] - 1, current_cell[1])
-            elif command == "down":
                 next_cell = (current_cell[0] + 1, current_cell[1])
+            elif command == "down":
+                next_cell = (current_cell[0] - 1, current_cell[1])
             elif command == "left":
                 next_cell = (current_cell[0], current_cell[1] - 1)
             elif command == "right":
