@@ -209,8 +209,8 @@ if __name__ == '__main__':
     current_orientation = "up"
 
     # Define start and goal positions in grid coordinates
-    start = (0, 4)
-    goal = (9, 4)
+    start = (0, 0)
+    goal = (9, 9)
     current_cell = start
 
     # Run A* search to compute a path
@@ -228,9 +228,9 @@ if __name__ == '__main__':
         # Execute the planned commands step-by-step
         for command in commands:
 
-            #if current_orientation == command:
-                #next_cell = (current_cell[0] + 1, current_cell[1])
-                #continue
+            if current_orientation == command:
+                next_cell = (current_cell[0] + 1, current_cell[1])
+                continue
 
             # Determine the next cell based on the current cell and the command
             if command == "up":
