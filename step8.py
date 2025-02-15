@@ -131,8 +131,9 @@ def path_to_commands(path):
     return commands
 
 def detect_stop_sign():
-    print("Detecting stop sign...")
     detected_sign = Vilib.traffic_sign_obj_parameter['t']  
+    if detected_sign != '':
+        print(f"Detected sign: {detected_sign}")
     return detected_sign == 'stop'
 
 def detect_obstacle_in_direction(direction, current):
