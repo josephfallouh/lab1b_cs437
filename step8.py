@@ -264,9 +264,9 @@ if __name__ == '__main__':
 
             # Determine the next cell based on the current cell and the command
             if grid_direction == "up":
-                next_cell = (current_cell[0] + 1, current_cell[1])
-            elif grid_direction == "down":
                 next_cell = (current_cell[0] - 1, current_cell[1])
+            elif grid_direction == "down":
+                next_cell = (current_cell[0] + 1, current_cell[1])
             elif grid_direction == "left":
                 next_cell = (current_cell[0], current_cell[1] - 1)
             elif grid_direction == "right":
