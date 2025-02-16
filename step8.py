@@ -151,7 +151,6 @@ def detect_obstacle_in_direction(direction, current):
     For example, if using an ultrasonic sensor, check if the distance in the 
     direction of movement is below a threshold.
     """
-    bad_read = px.ultrasonic.read()
     THRESHOLD_DISTANCE = 30  # cm; adjust based on your sensor and environment
     
     # For forward movement, keep the sensor (camera) centered.
@@ -178,7 +177,7 @@ def detect_obstacle_in_direction(direction, current):
         distance = float('inf')
     
     print(f"Obstacle detection for direction '{direction}': measured distance = {distance} cm")
-    return distance < THRESHOLD_DISTANCE
+    return (distance < THRESHOLD_DISTANCE and distance != -2)
 
 def move_car(direction):
 
