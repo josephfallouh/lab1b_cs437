@@ -94,7 +94,7 @@ def path_to_commands(path):
         nxt = path[i]
 
         # Correct dx and dy based on row-major grid
-        dx = curr[0] - nxt[0]  # Negative = moving down, Positive = moving up
+        dx = nxt[0]- curr[0]   # Negative = moving down, Positive = moving up
         dy = nxt[1] - curr[1]  # Negative = moving left, Positive = moving right
 
         # Determine the required new direction
