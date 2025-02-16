@@ -146,8 +146,8 @@ def detect_stop_sign():
     px.set_cam_pan_angle((-75))
     counter = 0
     #look left and right before continuing  
-    while (detected_sign != 'stop' & counter < 20):
-        sleep(0.1)
+    while (detected_sign != 'stop' and counter < 20):
+        time.sleep(0.1)
         detected_sign = Vilib.traffic_sign_obj_parameter['t']
         counter += 1
         px.set_cam_pan_angle((-75)+(7.5*counter))
