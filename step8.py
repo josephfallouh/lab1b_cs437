@@ -72,9 +72,9 @@ from picarx import Picarx
 from vilib import Vilib
 
 # Constants to calibrate movement (tweak these based on your testing)
-TIME_PER_CELL = 1     # Time (in seconds) to move forward the distance of one grid cell
-TURN_DURATION = 1     # Time (in seconds) to perform a turn maneuver
-STEERING_ANGLE = 45     # Example steering angle in degrees (adjust as needed)
+TIME_PER_CELL = .75     # Time (in seconds) to move forward the distance of one grid cell
+TURN_DURATION = 1.5     # Time (in seconds) to perform a turn maneuver
+STEERING_ANGLE = 30     # Example steering angle in degrees (adjust as needed)
 
 def path_to_commands(path):
     """
@@ -96,6 +96,7 @@ def path_to_commands(path):
         # Correct dx and dy based on row-major grid
         dx = nxt[0]- curr[0]   # Negative = moving down, Positive = moving up
         dy = nxt[1] - curr[1]  # Negative = moving left, Positive = moving right
+
 
         # Determine the required new direction
         if dx == 1 and dy == 0:
@@ -139,12 +140,22 @@ def path_to_commands(path):
         commands.append("up")
 
     return commands, grid_directions
+
 def detect_stop_sign():
     detected_sign = Vilib.traffic_sign_obj_parameter['t']  
+    px.set_cam_pan_angle((-75))
+    counter = 0
+    #look left and right before continuing  
+    while (detected_sign != 'stop' & counter < 20):
+        sleep(0.1)
+        detected_sign = Vilib.traffic_sign_obj_parameter['t']
+        counter += 1
+        px.set_cam_pan_angle((-75)+(7.5*counter))
     return detected_sign == 'stop'
 
 def detect_obstacle_in_direction(direction, current):
     """
+
     Placeholder for obstacle detection logic.
     Replace this function with your actual sensor code.
     The function should return True if an obstacle is detected in the intended cell.
@@ -152,7 +163,7 @@ def detect_obstacle_in_direction(direction, current):
     For example, if using an ultrasonic sensor, check if the distance in the 
     direction of movement is below a threshold.
     """
-    THRESHOLD_DISTANCE = 30  # cm; adjust based on your sensor and environment
+    THRESHOLD_DISTANCE = 50  # cm; adjust based on your sensor and environment
     
     # For forward movement, keep the sensor (camera) centered.
     if direction == "up":
@@ -161,14 +172,14 @@ def detect_obstacle_in_direction(direction, current):
         distance = px.ultrasonic.read()
     # For left, pan the sensor to the left.
     elif direction == "left":
-        px.set_cam_pan_angle(-STEERING_ANGLE)
-        time.sleep(0.1)
+        px.set_cam_pan_angle(-STEERING_ANGLE-30)
+        time.sleep(0.3)
         distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
     # For right, pan the sensor to the right.
     elif direction == "right":
-        px.set_cam_pan_angle(STEERING_ANGLE)
-        time.sleep(0.1)
+        px.set_cam_pan_angle(STEERING_ANGLE+30)
+        time.sleep(0.3)
         distance = px.ultrasonic.read()
         px.set_cam_pan_angle(0)
     # For backward movement, if no rear sensor is available, assume no obstacle.
@@ -194,14 +205,16 @@ def move_car(direction):
         time.sleep(TIME_PER_CELL)
         px.stop()
         
+
     elif direction == "left":
         print("Turning left")
 
         px.set_dir_servo_angle(-STEERING_ANGLE)
         px.set_cam_pan_angle(-STEERING_ANGLE)
+        px.forward(30)
         time.sleep(TURN_DURATION)
 
-        px.forward(30)
+        
         time.sleep(TIME_PER_CELL)
         
         px.stop()
@@ -213,9 +226,10 @@ def move_car(direction):
 
         px.set_dir_servo_angle(STEERING_ANGLE)
         px.set_cam_pan_angle(STEERING_ANGLE)
+        px.forward(30)
         time.sleep(TURN_DURATION)
 
-        px.forward(30)
+        
         time.sleep(TIME_PER_CELL)
 
         px.stop()
@@ -224,11 +238,6 @@ def move_car(direction):
         
     else:
         print("Unknown command received!")
-
-    if detect_stop_sign():
-        print("Stop sign detected! Stopping the car.")
-        px.stop()
-        time.sleep(3)
 
 
 
@@ -245,7 +254,7 @@ if __name__ == '__main__':
 
     # Define start and goal positions in grid coordinates
     start = (0, 0)
-    goal = (9, 9)
+    goal = (9,0)
     current_cell = start
 
     # Run A* search to compute a path
@@ -290,6 +299,7 @@ if __name__ == '__main__':
             
             # No obstacle detected; execute the movement command.
             move_car(command)
+
             current_cell = next_cell  # Update the current position.
             
             # Check if the goal has been reached.
@@ -308,3 +318,5 @@ if __name__ == '__main__':
 - TIME PER CELL is how car measures where it is at (if TIME PER CELL is 0.5s, it will take the car 4.5s to go accross the grids x or y axis)
 
 """
+
+
