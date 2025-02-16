@@ -119,6 +119,7 @@ def path_to_commands(path):
             
             #calculate shortest turning direction
             diff = (target_idx - current_idx) % 4
+            print(f"Turning from {direction} to {new_direction} (diff={diff})")
 
             if diff == 1:  
                 commands.append("right")  
