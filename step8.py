@@ -129,8 +129,8 @@ def path_to_commands(path):
             else:  
                 print("Unexpected direction change, check input values.")
                 break  
-                # Move forward after turning
-                commands.append("up")
+            # Move forward after turning
+            commands.append("up")
 
     return commands, grid_directions
 def detect_stop_sign():
