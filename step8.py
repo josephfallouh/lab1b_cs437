@@ -73,7 +73,7 @@ from vilib import Vilib
 
 # Constants to calibrate movement (tweak these based on your testing)
 TIME_PER_CELL = .75     # Time (in seconds) to move forward the distance of one grid cell
-TURN_DURATION = 1.45     # Time (in seconds) to perform a turn maneuver
+TURN_DURATION = 1.47     # Time (in seconds) to perform a turn maneuver
 STEERING_ANGLE = 30     # Example steering angle in degrees (adjust as needed)
 
 def path_to_commands(path):
