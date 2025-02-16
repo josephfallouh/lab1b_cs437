@@ -116,6 +116,10 @@ def path_to_commands(path):
             # Determine whether to turn left or right
             current_idx = DIRECTIONS.index(direction)
             target_idx = DIRECTIONS.index(new_direction)
+            
+            #calculate shortest turning direction
+            diff = (target_idx - current_idx) % 4
+
             if diff == 1:  
                 commands.append("right")  
                 direction = DIRECTIONS[(current_idx + 1) % 4]  # Turn right  
