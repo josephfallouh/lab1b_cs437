@@ -116,14 +116,17 @@ def path_to_commands(path):
             # Determine whether to turn left or right
             current_idx = DIRECTIONS.index(direction)
             target_idx = DIRECTIONS.index(new_direction)
-            if (target_idx - current_idx) % 4 == 1:
-                commands.append("right")
-            else:
-                commands.append("left")
-            direction = DIRECTIONS[(DIRECTIONS.index(direction) + 1) % 4]  # Simulate turn
-
-        # Move forward after turning
-        commands.append("up")
+            if diff == 1:  
+                commands.append("right")  
+                direction = DIRECTIONS[(current_idx + 1) % 4]  # Turn right  
+            elif diff == 3:  
+                commands.append("left")  
+                direction = DIRECTIONS[(current_idx - 1) % 4]  # Turn left  
+            else:  
+                print("Unexpected direction change, check input values.")
+                break  
+                # Move forward after turning
+                commands.append("up")
 
     return commands, grid_directions
 def detect_stop_sign():
