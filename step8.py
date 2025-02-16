@@ -73,7 +73,7 @@ from vilib import Vilib
 
 # Constants to calibrate movement (tweak these based on your testing)
 TIME_PER_CELL = .75     # Time (in seconds) to move forward the distance of one grid cell
-TURN_DURATION = 1.47     # Time (in seconds) to perform a turn maneuver
+TURN_DURATION = 1.50     # Time (in seconds) to perform a turn maneuver
 STEERING_ANGLE = 30     # Example steering angle in degrees (adjust as needed)
 
 def path_to_commands(path):
@@ -187,9 +187,14 @@ def detect_obstacle_in_direction(direction, current):
         distance = float('inf')
     else:
         distance = float('inf')
-    
-    print(f"Obstacle detection for direction '{direction}': measured distance = {distance} cm")
-    return (distance < THRESHOLD_DISTANCE and distance != -2)
+
+    if (distance < THRESHOLD_DISTANCE and distance != -2):
+        print(f"Obstacle detected in direction '{direction}' at {distance} cm!")
+        return (int(distance / 25) + 1) #returns 1 if distance is less than 25 cm, 2 if distance is less than 50 cm, etc.
+    else:
+        print(f"No obstacle detected in direction '{direction}'. Distance: {distance} cm")
+        return 0
+
 
 def move_car(direction):
 
@@ -212,7 +217,7 @@ def move_car(direction):
         px.set_dir_servo_angle(-STEERING_ANGLE)
         px.set_cam_pan_angle(-STEERING_ANGLE)
         px.forward(30)
-        time.sleep(TURN_DURATION)
+        time.sleep(TURN_DURATION-.6)
 
         
         time.sleep(TIME_PER_CELL)
@@ -272,16 +277,15 @@ if __name__ == '__main__':
         # Execute the planned commands step-by-step
         for command, grid_direction in zip(commands, grid_directions):
             print(grid)
-
             # Determine the next cell based on the current cell and the command
             if grid_direction == "up":
                 next_cell = (current_cell[0] + 1, current_cell[1])
             elif grid_direction == "down":
                 next_cell = (current_cell[0] - 1, current_cell[1])
             elif grid_direction == "left":
-                next_cell = (current_cell[0], current_cell[1] - 1)
+                next_cell = (current_cell[0] + 1, current_cell[1] - 1)
             elif grid_direction == "right":
-                next_cell = (current_cell[0], current_cell[1] + 1)
+                next_cell = (current_cell[0] + 1, current_cell[1] + 1)
             else:
                 print("Encountered unknown command. Skipping.")
                 continue
@@ -293,10 +297,32 @@ if __name__ == '__main__':
                 time.sleep(3)    
             
             # Before executing, check for an obstacle in the intended cell.
-            if detect_obstacle_in_direction(command, current_cell):
-                print(f"Obstacle detected at {next_cell}. Updating grid and replanning.")
+            next_obstacle =  detect_obstacle_in_direction(command, current_cell)
+            if grid_direction == "up":
+                next_cell = (current_cell[0] + 1, current_cell[1])
+                next_next_cell = (current_cell[0] + 2, current_cell[1])
+            elif grid_direction == "down":
+                next_cell = (current_cell[0] - 1, current_cell[1])
+                next_next_cell = (current_cell[0] - 2, current_cell[1])
+            elif grid_direction == "left":
+                next_cell = (current_cell[0] + 1, current_cell[1] - 1)
+                next_next_cell = (current_cell[0] + 1, current_cell[1] - 2)
+            elif grid_direction == "right":
+                next_cell = (current_cell[0] + 1, current_cell[1] + 1)
+                next_next_cell = (current_cell[0] + 1, current_cell[1] + 2)
+            else:
+                print("Encountered unknown command. Skipping.")
+                continue
+            if next_obstacle == 1:
                 grid[next_cell] = 1  # Mark the cell as an obstacle.
+                print(f"Obstacle detected at {next_cell}. Updating grid and replanning.")
                 break  # Break out to replan the route from the current position.
+            elif next_obstacle == 2:
+                grid[next_cell] = 1
+                grid[next_next_cell] = 1
+                print(f"Obstacle detected at {next_next_cell}. Updating grid and replanning.")
+                break
+                
             
             # No obstacle detected; execute the movement command.
             move_car(command)
