@@ -126,11 +126,16 @@ def path_to_commands(path):
             elif diff == 3:  
                 commands.append("left")  
                 direction = DIRECTIONS[(current_idx - 1) % 4]  # Turn left  
+            elif diff == 2:  
+                commands.append("right")  
+                commands.append("right")  
+                direction = DIRECTIONS[(current_idx + 2) % 4]  # Turn around  
             else:  
                 print("Unexpected direction change, check input values.")
                 break  
-            # Move forward after turning
-            commands.append("up")
+
+        # Move forward after facing the correct direction
+        commands.append("up")
 
     return commands, grid_directions
 def detect_stop_sign():
